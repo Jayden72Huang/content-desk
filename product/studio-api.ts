@@ -1,4 +1,4 @@
-import fs from 'node:fs';
+import {loadProExtension} from './pro-extension';
 import path from 'node:path';
 import sharp from 'sharp';
 import {AgentRunner} from './agent-runner';
@@ -13,15 +13,19 @@ export async function studioService(store:LocalStore){
  const logo='data:image/png;base64,'+(await sharp(Buffer.from('<svg width="780" height="120" xmlns="http://www.w3.org/2000/svg"><rect width="780" height="120" fill="#101113"/><rect x="30" y="34" width="40" height="52" rx="7" fill="#e8da75"/><path d="M42 47h19M42 60h15M42 73h19" stroke="#101113" stroke-width="3"/><text x="92" y="77" fill="#f1f2ed" font-family="sans-serif" font-size="37">Content Desk</text></svg>')).png().toBuffer()).toString('base64');
  if(!store.catalog().series.length)store.saveCatalog({series:[{id:'my-first-series',name:'我的第一个系列',createdAt:new Date().toISOString(),description:'从一个好想法开始，积累自己的内容与模板。',layout:'深色编辑模板',settings:defaults}]});
  for(const series of store.catalog().series){if(!store.template(series.id))store.saveTemplate({seriesId:series.id,settings:defaults,logo});}
- return {shutdown:()=>runner.shutdown(),async route(method:string,url:URL,input:()=>Promise<unknown>):Promise<unknown>{
+ const generate=(value:{provider:'codex'|'claude';type:'module'|'template'|'article';prompt:string;templateId?:string})=>{
+  const template=value.templateId?artifacts.get(value.templateId).artifact:undefined;
+  if(template&&template.type!=='template')throw new Error('请选择内容模板');
+  return runner.start({...value,template});
+ };
+ const pro=await loadProExtension({dataDir:store.dir,runner:{start:generate,get:id=>runner.get(id),cancel:id=>runner.cancel(id)},artifacts});
+ return {shutdown:()=>{pro.shutdown();runner.shutdown();},proRoute:pro.route,async route(method:string,url:URL,input:()=>Promise<unknown>):Promise<unknown>{
   const route=url.pathname.replace('/api/studio','');
   if(method==='GET'&&route==='/state')return {artifacts:artifacts.list(),jobs:runner.list(),series:store.catalog().series};
   if(method==='GET'&&route==='/agents')return {agents:await runner.detect()};
   if(method==='POST'&&route==='/generate'){
    const value=await input() as {provider:'codex'|'claude';type:'module'|'template'|'article';prompt:string;templateId?:string};
-   const template=value.templateId?artifacts.get(value.templateId).artifact:undefined;
-   if(template&&template.type!=='template')throw new Error('请选择内容模板');
-   return runner.start({...value,template});
+   return generate(value);
   }
   if(method==='GET'&&route==='/job')return runner.get(url.searchParams.get('id')||'');
   if(method==='POST'&&route==='/cancel'){const value=await input() as {id:string};return runner.cancel(value.id);}

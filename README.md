@@ -85,3 +85,12 @@ bun test
 自动化微信测试使用模拟响应，不代表真实发布。完整手动验收记录见 [RELEASE-CHECKS](product/RELEASE-CHECKS.md)。
 
 MIT © 2026 Jayden Huang。第三方依赖保留各自许可证，见 [THIRD-PARTY](THIRD-PARTY.md)。
+
+### 可选 Pro 开发扩展
+
+Community 可加载单独安装的本机扩展；默认不加载，免费功能照常使用。
+开发发行方指定 `CONTENT_DESK_PRO_MODULE`（绝对路径）和
+`CONTENT_DESK_PRO_PUBLIC_KEY`（Ed25519 PEM 公钥）后，创作室的版本入口变为
+Pro 工作流。该面板支持签名授权导入、串行批量队列、运行期间定时执行、
+逐项检查保存及整库导出。扩展源码与生产签名私钥不属于本公开仓库。
+Pro 目前仍为开发验证阶段，未开售；详细边界见 `product/EDITIONS.md`。

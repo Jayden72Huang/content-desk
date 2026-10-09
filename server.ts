@@ -31,6 +31,7 @@ const server=http.createServer(async(request,response)=>{
   try{
     const url=new URL(request.url||'/','http://127.0.0.1:'+port);
     if(request.method==='POST'&&(!origins.has(request.headers.origin||'')||request.headers['x-workbench-token']!==csrf)){json(response,403,{error:'页面已过期或请求来源无效，请刷新工作台'});return;}
+    if(url.pathname.startsWith('/api/pro/')){json(response,200,await studio.proRoute(request.method||'GET',url,()=>body(request)));return;}
     if(url.pathname.startsWith('/api/studio/')){json(response,200,await studio.route(request.method||'GET',url,()=>body(request)));return;}
     if(request.method==='GET'&&url.pathname==='/api/bootstrap'){
       let configured=false,configurationError='';try{await credentials();configured=true;}catch(e){configurationError=(e as Error).message;}
@@ -44,7 +45,7 @@ const server=http.createServer(async(request,response)=>{
     if(request.method==='GET'&&url.pathname==='/api/template'){json(response,200,store.template(url.searchParams.get('seriesId')||''));return;}
     if(request.method==='POST'&&url.pathname==='/api/template'){json(response,200,store.saveTemplate(await body(request)));return;}
     if(request.method==='POST'&&url.pathname==='/api/review'){const input=await body(request);json(response,200,store.reviewVersion(input.revision,input.status));return;}
-    if(request.method==='GET'&&url.pathname==='/api/health'){json(response,200,{ok:true,activeRevision});return;}
+    if(request.method==='GET'&&url.pathname==='/api/health'){json(response,200,{ok:true,activeRevision,instanceId:process.env.CONTENT_DESK_INSTANCE_ID||''});return;}
     if(request.method==='GET'&&url.pathname==='/api/snapshot'){json(response,200,store.get(url.searchParams.get('revision')||''));return;}
     if(request.method==='GET'&&url.pathname==='/api/cover'){
       const source=store.get(url.searchParams.get('revision')||'').cover;const [header,data]=source.split(',');
