@@ -2,6 +2,8 @@
 
 **把想法，做成你的内容系统。**
 
+[产品官网](https://content-desk-jayden.vercel.app) · [下载 Community](https://github.com/Jayden72Huang/content-desk/releases/latest)
+
 开源的本地内容创作工作台。自己搭模块、设计内容模板，连接 Codex 或 Claude Code 生成内容，再进入文章编辑器检查排版并同步微信公众号草稿。
 
 ## Community 0.1

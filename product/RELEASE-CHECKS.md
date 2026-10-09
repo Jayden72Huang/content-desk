@@ -26,8 +26,12 @@ Pro 权益、买断建议与实现边界已设计，尚未提供商业扩展、�
 
 源码包解压到独立临时目录，冻结锁文件安装、构建、类型检查与全部30项测试通过。8790 临时服务 health=true，只有1个基础模板、0篇文章、0个任务，未夹带私人内容；跨域写入返回403。测试结束已关闭8790。
 
-## 待补充证据
+## 已发布与回读
 
-- 公开仓库和发行包 URL / 校验和。
-- 干净目录安装与启动。
-- 官网外部 URL / 下载入口回读。
+- 公开仓库：https://github.com/Jayden72Huang/content-desk （public，main）。
+- 发行包：https://github.com/Jayden72Huang/content-desk/releases/tag/v0.1.0
+- 源码归档 SHA256：7b56688b06d45d1aebce35e1a8a4444b416450664e168947726823678b034bc6；发布后重新下载核对一致。
+- 官网：https://content-desk-jayden.vercel.app ，已从公网浏览器打开验证标题、版本和下载入口。
+- GitHub CI：https://github.com/Jayden72Huang/content-desk/actions/runs/37927459298 ，completed / success。
+- 官网390px宽度无横向溢出，示例模板切换与排序交互验证通过。
+
