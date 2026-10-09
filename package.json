@@ -8,7 +8,8 @@
     "build": "bun build.ts && bun product/build-studio.ts",
     "start": "bun server.ts --port 8787",
     "test": "bun test",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "build:mac": "bun run build && bun desktop/build-macos.ts"
   },
   "dependencies": {
     "cheerio": "1.2.0",
