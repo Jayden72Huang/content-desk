@@ -30,6 +30,7 @@ export async function studioService(store:LocalStore){
   if(method==='GET'&&route==='/job')return runner.get(url.searchParams.get('id')||'');
   if(method==='POST'&&route==='/cancel'){const value=await input() as {id:string};return runner.cancel(value.id);}
   if(method==='POST'&&route==='/save'){const value=await input() as {artifact:unknown;jobId?:string};const saved=artifacts.save(value.artifact);if(value.jobId){const job=runner.get(value.jobId);if(job.status==='ready')runner.accepted(job.id,saved.id);}return saved;}
+  if(method==='POST'&&route==='/import-bundle'){const value=await input() as {bundle:unknown};return artifacts.importBundle(value.bundle);}
   if(method==='POST'&&route==='/to-editor'){
    const value=await input() as {artifact:unknown;seriesId:string};const artifact=parseArtifact(value.artifact);
    if(artifact.type!=='article')throw new Error('请选择文章');

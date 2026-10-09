@@ -5,6 +5,8 @@ import {execFileSync} from 'node:child_process';
 import sharp from 'sharp';
 if(process.platform!=='darwin')throw new Error('macOS packaging must run on macOS');
 const root=path.resolve(import.meta.dir,'..'),out=path.join(root,'dist','macos'),app=path.join(out,'Content Desk.app');
+const version=JSON.parse(fs.readFileSync(path.join(root,'package.json'),'utf8')).version as string;
+if(!/^\d+\.\d+\.\d+$/.test(version))throw new Error('Invalid desktop version');
 fs.mkdirSync(out,{recursive:true});if(fs.existsSync(app))fs.rmSync(app,{recursive:true});
 const contents=path.join(app,'Contents'),resources=path.join(contents,'Resources'),runtime=path.join(resources,'runtime'),macos=path.join(contents,'MacOS');
 for(const dir of [resources,runtime,macos])fs.mkdirSync(dir,{recursive:true});
@@ -55,7 +57,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate, WKNavigationDelegate, 
   view.addItem(withTitle:"重新载入",action:#selector(reload),keyEquivalent:"r").target=self
   NSApp.mainMenu=menu
  }
- @objc func about(){NSApp.orderFrontStandardAboutPanel(options:[.applicationName:"Content Desk",.applicationVersion:"0.1.0 Community development",.credits:NSAttributedString(string:"Local-first DIY content studio · MIT")])}
+ @objc func about(){NSApp.orderFrontStandardAboutPanel(options:[.applicationName:"Content Desk",.applicationVersion:"__CONTENT_DESK_VERSION__ Community development",.credits:NSAttributedString(string:"Local-first DIY content studio · MIT")])}
  @objc func reload(){web.reload()}
  func startService(){
   guard let resources=Bundle.main.resourceURL else { fail("应用文件不完整，请重新下载。");return }
@@ -120,9 +122,9 @@ final class AppDelegate: NSObject, NSApplicationDelegate, WKNavigationDelegate, 
 }
 let application=NSApplication.shared;let delegate=AppDelegate();application.delegate=delegate;application.setActivationPolicy(.regular);application.run()
 `;
-fs.writeFileSync(path.join(out,'Host.swift'),swift.replace(/\\u([0-9a-f]{4})/gi,(_,hex:string)=>String.fromCharCode(parseInt(hex,16))));
+fs.writeFileSync(path.join(out,'Host.swift'),swift.replaceAll('__CONTENT_DESK_VERSION__',version).replace(/\\u([0-9a-f]{4})/gi,(_,hex:string)=>String.fromCharCode(parseInt(hex,16))));
 execFileSync('swiftc',['-O','-target',`${process.arch==='arm64'?'arm64':'x86_64'}-apple-macosx13.0`,'-framework','AppKit','-framework','WebKit',path.join(out,'Host.swift'),'-o',path.join(macos,'ContentDesk')],{stdio:'inherit'});
-const plist=`<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd"><plist version="1.0"><dict><key>CFBundleName</key><string>Content Desk</string><key>CFBundleDisplayName</key><string>Content Desk</string><key>CFBundleIdentifier</key><string>studio.contentdesk.community</string><key>CFBundleExecutable</key><string>ContentDesk</string><key>CFBundlePackageType</key><string>APPL</string><key>CFBundleShortVersionString</key><string>0.1.0</string><key>CFBundleVersion</key><string>2</string><key>CFBundleIconFile</key><string>AppIcon</string><key>LSMinimumSystemVersion</key><string>13.0</string><key>NSHighResolutionCapable</key><true/><key>NSAppTransportSecurity</key><dict><key>NSAllowsLocalNetworking</key><true/></dict></dict></plist>`;
+const plist=`<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd"><plist version="1.0"><dict><key>CFBundleName</key><string>Content Desk</string><key>CFBundleDisplayName</key><string>Content Desk</string><key>CFBundleIdentifier</key><string>studio.contentdesk.community</string><key>CFBundleExecutable</key><string>ContentDesk</string><key>CFBundlePackageType</key><string>APPL</string><key>CFBundleShortVersionString</key><string>${version}</string><key>CFBundleVersion</key><string>3</string><key>CFBundleIconFile</key><string>AppIcon</string><key>LSMinimumSystemVersion</key><string>13.0</string><key>NSHighResolutionCapable</key><true/><key>NSAppTransportSecurity</key><dict><key>NSAllowsLocalNetworking</key><true/></dict></dict></plist>`;
 fs.writeFileSync(path.join(contents,'Info.plist'),plist);
 execFileSync('codesign',['--force','--deep','--sign','-',app],{stdio:'inherit'});
 console.log('Built '+app+' (ad-hoc signed, not notarized)');
