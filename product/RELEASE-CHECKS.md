@@ -68,3 +68,12 @@ Pro 路由沿用本机 Host、POST Origin 和会话令牌校验；模板解析�
 首次CLI导入结果：新增2项、跳过基础模板1项；重复导入结果：新增0项、跳过3项。
 浏览器“导入 JSON”选择同一文件，确认后显示“新增0项，跳过重复3项”。
 素材库可见原模板与两条真实生成模块。自动检查36项通过，包含损坏条目阻止部分导入、内容哈希校验、创建时间保留与幂等恢复。
+
+## 0.2.0 发布与回读
+
+源码提交：918478adb5926dccddbbf35e5b65de01b2f54218。
+发布：https://github.com/Jayden72Huang/content-desk/releases/tag/v0.2.0
+源码包SHA256：da82eda921cf04bd1cf632e5c3d4eb654ee9ac7c7e860aa05779b92619c59b30。
+独立解压安装、构建、类型检查及36项测试通过；重新从GitHub下载校验一致。
+CI：https://github.com/Jayden72Huang/content-desk/actions/runs/37930371521 ，success。
+官网生产部署：6PdXzbPhX6mpZzv8w8s2u5Ps2k4v；公网浏览器回读显示COMMUNITY 0.2，Pro内测开发中、未开放购买，下载链接指向GitHub最新发行。
