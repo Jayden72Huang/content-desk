@@ -1,0 +1,1 @@
+const port=8789;Bun.serve({port,hostname:'127.0.0.1',fetch:()=>new Response(Bun.file(import.meta.dir+'/index.html'),{headers:{'Content-Type':'text/html; charset=utf-8'}})});console.log('Site preview http://127.0.0.1:'+port);

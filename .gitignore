@@ -1,0 +1,9 @@
+node_modules/
+.local-data/
+.data/
+dist/
+.vercel/
+.env*
+*.log
+preview.html
+studio.html

@@ -1,0 +1,21 @@
+{
+  "name": "@jayden72/content-desk",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "license": "MIT",
+  "scripts": {
+    "build": "bun build.ts && bun product/build-studio.ts",
+    "start": "bun server.ts --port 8787",
+    "test": "bun test",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "cheerio": "1.2.0",
+    "sharp": "0.34.5"
+  },
+  "devDependencies": {
+    "@types/bun": "1.3.10",
+    "typescript": "5.9.3"
+  }
+}

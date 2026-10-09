@@ -1,0 +1,13 @@
+import fs from 'node:fs';
+import path from 'node:path';
+import { shell } from './desk-shell';
+import { style } from './desk-style';
+const root=import.meta.dir;
+const result=await Bun.build({entrypoints:[path.join(root,'workbench.ts')],target:'browser',minify:false});
+if(!result.success)throw new Error(result.logs.join('\n'));
+const script=(await result.outputs[0].text()).replace(/<\/script/gi,'<\\/script');
+const html=shell.replace('/*DESK_STYLE*/',()=>style).replace('/*DESK_SCRIPT*/',()=>script);
+if(!html.includes('id="document"')||html.includes('/*DESK_'))throw new Error('页面构建不完整');
+fs.writeFileSync(path.join(root,'preview.html.next'),html);
+fs.renameSync(path.join(root,'preview.html.next'),path.join(root,'preview.html'));
+console.log('工作台构建完成：'+Buffer.byteLength(html)+' bytes（文章和历史数据保持原样）');
